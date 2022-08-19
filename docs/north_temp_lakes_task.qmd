@@ -1,0 +1,42 @@
+---
+title: "Ice Cover"
+format: html
+editor: visual
+---
+
+## 
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+```{r}
+ice_cover_raw <- read_csv(here("data", "ntl33_v7.csv"), 
+                          na = c("-999", "NaN", ""))
+
+weather_raw <- read_csv(here("data", "ntl20_v6.csv"))
+```
+
+### Graph ice duration over different lakes
+
+```{r}
+ice_duration_summary <- ice_cover_raw |> 
+  select(-ice_on, -ice_off) |>
+  group_by(year4) |>
+  summarize(mean_ice_duration = mean(ice_duration, na.rm = TRUE), 
+            sd_ice_duration = sd(ice_duration, na.rm = TRUE))
+```
+
+
+```{r}
+ice_duration_plot <- ggplot(ice_cover_raw, 
+                            aes(x = lakeid, y = ice_duration)) + 
+  geom_jitter(aes(color = lakeid), width = 0.2) + 
+  geom_boxplot(width = 0.3, fill = NA, size = 1, outlier.colour = NA)
+
+ice_duration_plot
+  
+```
+
